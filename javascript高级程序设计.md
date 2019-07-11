@@ -403,8 +403,57 @@ safari3以前的版本会枚举被隐藏的属性；
 
 ## 9.3用户代理检测
 
-用户代理检测：通过检测`用户代理字符串`来确定实际使用的浏览器类型。
+**用户代理检测**：通过检测`用户代理字符串`来确定实际使用的浏览器类型。
 
-用户代理字符串：可以通过JavaScript的navigator.userAgent()方法访问。
+**用户代理字符串**：可以通过JavaScript的navigator.userAgent()方法访问。
 
-电子欺骗：浏览器通过在用户代理字符串中加入一下错误的或者误导性的信息，来达到欺骗服务器的目的。
+**电子欺骗**：浏览器通过在用户代理字符串中加入一下错误的或者误导性的信息，来达到欺骗服务器的目的。
+
+### 9.3.1. 用户代理字符串的历史
+
+- **早期的浏览器：**
+
+第一款web浏览器mosaic，用户代理字符串格式为：mosaic/0.9
+
+第一款Netscape浏览器Mozilla，用户代理字符串格式为：Mozilla/版本号 [语言] (平台; 加密信息)
+
+其中加密信息包括U(128位加密)、I  (40位加密)和N（不加密）
+
+```
+Mozilla/2.02 [Fr] (WinNT; I)
+```
+
+- **Netscape3.0和IE3.0**
+
+Netscape3.0格式：Mozilla/版本号 （平台; 加密类型 [; 操作系统或者cpu说明]）
+
+当时的Netscape3.0浏览器是主流浏览器，因此IE3.0在用户代理字符串中加入了欺骗信息Mozilla，将自己伪装成Netscape3.0
+
+- **Gecko**
+
+  **Gecko是FireFox的呈现引擎**，第一个采用Gecko的浏览器是Netscape6.0。
+
+```javascript
+//Mozilla/Mozilla版本号 （平台; 加密信息; 操作系统或者CPU; 语言; 预先发行版本）
+//Gecko/Gecko版本号 应用程序或产品/应用程序或产品版本号。
+
+//示例：windowsXP下的Netscape 6.2.1
+Mozilla/5.0 (window; U; windows NT 5.1; en-US; rv:0.9.4) Gecko/20011128 Netscape6/6.2.1
+```
+
+- **Webkit**
+
+2003年，Apple公司宣布要发布自己的web浏览器，叫做Safari，Safari的呈现引擎叫做Webkit。webkit是Linux系统中konqueror浏览器的呈现引擎KHTML的一个分支。
+
+webkit刚发布时的用户代理字符串格式：
+
+```
+Mozilla/Mozilla版本号 (平台; 加密信息; 操作系统或者CPU; 语言) AppleWebkit/AppleWebkit版本号 (KHTML, like Gecko) Safari/Safari版本号。
+```
+
+Safari3.0时新增了version记号，表示safari的实际版本号。只在Safari中有，其它webkit支持的浏览器中没有。
+
+```
+Mozilla/Mozilla版本号 (平台; 加密信息; 操作系统或者CPU; 语言) AppleWebkit/AppleWebkit版本号 (KHTML, like Gecko) version/3.0.3 Safari/Safari版本号。
+```
+
