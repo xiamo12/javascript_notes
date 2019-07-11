@@ -381,7 +381,7 @@ function isHostMethod(object, property){
 }
 ```
 
-### 9.1.2 能力检测，不是浏览器检测
+### 9.1.2  能力检测，不是浏览器检测
 
 检测某个或者某几个特性并不能确定浏览器。
 
@@ -391,7 +391,7 @@ function isHostMethod(object, property){
 var hasPlugins = !!(navigator.plugins && navigator.plugins.length);//能力检测，检测是否有netscape风格的插件
 ```
 
-## 9.2怪癖检测
+## 9.2  怪癖检测
 
 怪癖检测的目标是检测浏览器有什么特殊行为。能力检测是检测浏览器支持什么行为，怪癖检测是检测浏览器有什么缺陷。
 
@@ -401,7 +401,7 @@ safari3以前的版本会枚举被隐藏的属性；
 
 最好只检测对代码运行有直接影响的“怪癖”，而且最好在脚本开始执行时就检测。
 
-## 9.3用户代理检测
+## 9.3  用户代理检测
 
 **用户代理检测**：通过检测`用户代理字符串`来确定实际使用的浏览器类型。
 
@@ -409,7 +409,7 @@ safari3以前的版本会枚举被隐藏的属性；
 
 **电子欺骗**：浏览器通过在用户代理字符串中加入一下错误的或者误导性的信息，来达到欺骗服务器的目的。
 
-### 9.3.1. 用户代理字符串的历史
+### 9.3.1  用户代理字符串的历史
 
 - **早期的浏览器：**
 
@@ -429,7 +429,7 @@ Netscape3.0格式：Mozilla/版本号 （平台; 加密类型 [; 操作系统或
 
 当时的Netscape3.0浏览器是主流浏览器，因此IE3.0在用户代理字符串中加入了欺骗信息Mozilla，将自己伪装成Netscape3.0
 
-- **Gecko**
+- **Gecko**【FireFox的呈现引擎】
 
   **Gecko是FireFox的呈现引擎**，第一个采用Gecko的浏览器是Netscape6.0。
 
@@ -441,7 +441,7 @@ Netscape3.0格式：Mozilla/版本号 （平台; 加密类型 [; 操作系统或
 Mozilla/5.0 (window; U; windows NT 5.1; en-US; rv:0.9.4) Gecko/20011128 Netscape6/6.2.1
 ```
 
-- **Webkit**
+- **Webkit**【Safari的呈现引擎】
 
 2003年，Apple公司宣布要发布自己的web浏览器，叫做Safari，Safari的呈现引擎叫做Webkit。webkit是Linux系统中konqueror浏览器的呈现引擎KHTML的一个分支。
 
@@ -453,7 +453,151 @@ Mozilla/Mozilla版本号 (平台; 加密信息; 操作系统或者CPU; 语言) A
 
 Safari3.0时新增了version记号，表示safari的实际版本号。只在Safari中有，其它webkit支持的浏览器中没有。
 
-```
-Mozilla/Mozilla版本号 (平台; 加密信息; 操作系统或者CPU; 语言) AppleWebkit/AppleWebkit版本号 (KHTML, like Gecko) version/3.0.3 Safari/Safari版本号。
+```JavaScript
+//Mozilla/Mozilla版本号 (平台; 加密信息; 操作系统或者CPU; 语言) AppleWebkit/AppleWebkit版本号 //(KHTML, like Gecko) version/3.0.3 Safari/Safari版本号。
+
+//示例：webkit内核的Safari浏览器用户代理字符串，由navigator.userAgent()方法获取
+
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0.3 Safari/605.1.15
 ```
 
+- **Konqueror**【KHTML】
+
+  konqueror浏览器是基于Linux平台的一款浏览器，它的呈现引擎是KHTML
+
+- **Chrome**【webkit】
+
+使用webkit呈现引擎，但是使用了不同的JavaScript引擎。用户代理字符串格式：
+
+```javascript 
+//Mozilla/Mozilla版本 (平台; 加密信息; 操作系统和CPU; 语言) AppleWebkit/AppleWebkit版本号 (KHTML, //like Gecko) Chrome/Chrome版本号 Safari/Safari版本号
+
+//示例：Chrome浏览器的navigator.userAgent()信息：
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36
+```
+
+- **Opera**【presto】
+
+  目前的大多数嗅探技术，都只对Mozilla内核和Gecko内核的浏览器感兴趣
+
+```javascript
+//目前发布的浏览器中，唯一使用产品名和版本号来彻底识别自身的浏览器。
+//Opera8.0之前版本
+
+Opera/版本号 (操作系统或者CPU; 加密类型) [语言]
+
+//Opera8.0发布以后
+Opera/版本号 (操作系统或者CPU; 加密类型; 语言) 
+
+//Opera9.0之后出现两种修改用户代理字符串的方式：
+//一是将自身标识为另一个浏览器，如FireFox或者IE；
+//另一个是将自己伪装成另一个浏览器，如FireFox或者IE；
+```
+
+- **IOS和Android**
+
+移动操作系统IOS和Android的默认浏览器都是基于Webkit。
+
+```javascript
+//IOS用户代理字符串
+
+Mozilla/5.0 (平台; 加密类型; 操作系统或者CPU like Mac OS X; 语言)
+AppleWebkit/AppleWebkit版本号 (KHTML, like Gecko) Version/浏览器版本号 Mobile/移动版本号 safari/safari版本号
+
+//示例
+Mozilla/5.0 (iPbone; U; CPU iPbone OS 3_0 like Mac OS X; en-us)
+AppleWebkit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 safari/safari528.16
+
+```
+
+### 9.3.2  用户代理字符串检测技术
+
+根据**呈现引擎**和**最低限度的版本**来检测特定的浏览器。
+
+- **识别呈现引擎**
+
+  五大呈现引擎：IE（IE）、Gecko（FireFox）、Webkit（Chrome和Safari以及IOS、Android移动平台）、Presto（Opera）、KHTML（基于Linux平台的konquero浏览器内核r）
+
+  引擎识别的最佳顺序：Opera- ->WebKit - ->KHTML- ->Gecko- ->IE
+
+  **Opera：**
+
+  - 7.6以及更高版本：Opera的version()方法：window.opera.version();
+  - 7.6及其之前的版本：直接检测用户代理字符串
+
+  **Webkit:**
+
+  - AppleWebKit字符串是wbekit内核的浏览器独有的，用正则表达式检测该字符串是否存在，如果存在就保存AppleWebKit后面的版本号；
+
+  **KHTML：**
+
+  - 正则表达式检测KHTML字符串和konqueror版本
+
+  **Gecko：**
+
+  - Gecko内核的浏览器，用户代理字符串中的版本号介于"vr:"与")"之间，因此检测这之间的版本号。
+
+  **IE：**
+
+  - IE浏览器的版本号位于字符串MISE后面、一个分号的前面。
+
+- **识别浏览器**
+
+  - Opera内核：Opera浏览器：version()方法：window.opera.version()
+
+  - webkit内核：
+    - Safari浏览器：用户代理字符串中同时含有AppleWebKit和Version
+    - Chrome浏览器：用户代理字符串中同时含有AppleWebKit和Chrome
+  - KHTML内核：konqueror浏览器
+  - Gecko内核：含有FireFox字符串的是FireFox火狐浏览器
+
+- **识别平台**
+
+三大主流平台：windows、Mac、Linux。对这三个平台而言，浏览器一般指报告Windows。
+
+确定平台方法：`navigator.platform`要比检测用户代理字符串更有用。
+
+```
+var p = navigator.platform;
+system.win = p.indexOf("Win") == 0;
+system.mac = p.indexOf("Mac") == 0;
+system.x11 = (p.indexOf("X11") == 0 || (p.indexOf("Linux") == 0));
+```
+
+- **识别windows操作系统**
+
+在windows XP之前，有两个Windows版本，一个针对个人的windows 95、windows 98和Windows ME；一个针对商业的Windows NT，最后因为市场原因Windows NT改名为Windows 2000。这两个版本最后合并成基于Windows NT的Windows XP，随后又基于Windows XP发展出了Windows Vista。
+
+- **识别移动设备**
+
+  IOS系统：识别字符串iPhone、iPod、iPad
+
+  Android系统：识别Android后面的版本号
+
+- **识别游戏系统**
+
+  任天堂wii或者playstation 3或者内置web浏览器都提供了浏览器下载。
+
+  wii：Opera/9.10 (Nintendo Wii; U;  ; 1621; en)
+
+  Playstation3: Mozilla/5.0 (PLAYSTATION 3; 2.00)
+
+### 9.3.3  完整的代码
+
+完整的用户代理字符串检测，包括检测呈现引擎、平台、Windows操作系统、移动设备、游戏系统
+
+### 9.3.4  使用方法
+
+用户代理检测是客户端检测的最后一个方法，优先采用性能检测和怪癖检测。
+
+# 第十章：  DOM【2019.7.11】
+
+DOM（文档对象模型Document Object Model）是HTML和XML的一个API（应用程序编程接口）
+
+## 10.1  节点层次
+
+DOM可以将HTML或者XMl描述成一个由多层节点构成的结构。
+
+文档节点是每个文档的根结点。html元素通常作为HTML文档中文档元素的唯一子节点，称为文档元素。
+
+HTML文档元素始终是<html>，XML文档中任何元素都可以成为文档元素。
