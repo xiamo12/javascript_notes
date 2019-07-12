@@ -612,23 +612,222 @@ html元素通过元素节点来表示
 
 ### 10.1.1  Node类型
 
-- nodeType: 节点类型：
+- `nodeType`: 节点类型：
   - 元素节点nodeType = 1
   - 属性节点nodeType = 2
   - 文本节点nodeType = 3
   - 注释节点nodeType = 8
   - 文档节点nodeType = 9
-- nodeName：节点名称
+- `nodeName`：节点名称
   - 元素的nodeName是元素标签名。
 
-- nodeValue：节点值
+- `nodeValue`：节点值
   - 元素的nodeValue = null
   - 属性的nodeValue = 属性值
 
-- childNodes：每个节点都有一个childNodes属性，其中保存着一个NodeList对象。，NodeList是一个类数组对象，可以用方括号访问它的属性，但是它并不是array的实例。
+- `childNodes`：每个节点都有一个childNodes属性，其中保存着一个NodeList对象。`NodeList`是一个类数组对象，可以用方括号访问它的属性，但是它并不是array的实例。访问保存在`NodeList`中的子节点，可以通过方括号[]，也可以通过item()方法。
 
+- `NodeList`有一个`length`属性`someNode.childNodes.length`，这个属性是查询`someNode`的子节点数量时，查询那一瞬间的子节点数量。NodeList是基于DOM结构执行动态查询的结果。
+
+  ```javascript
+  var firstNode = someNode.childNodes[0]
+  //or
+  var firstNode = someNode.childNodes.item(0)
   ```
-  someNode.childNodes[0]
+
+- NodeList有length属性，可以通过方括号访问属性，但是它是类数组对象。要将它转换成数组对象，针对IE和非IE浏览器有不同的方法：
+
+  ```javascript
+  function convertToArray(){
+    var array = null;
+    try{
+      array = Array.prototype.slice.call(nodes, 0);
+    }catch(er){
+      array = [];
+      for(i = 0; i < nodes.length; i++){
+        array.push(nodes[i])
+      }
+    }
+    return array;
+  }
+  ```
+
+- 节点之间的关系：
+
+  - 父节点`parentNode`：包含在NodeList列表里的所有子节点都有同一个parentNode。每个节点的父节点是唯一的，所以是单数；
+  - 子节点`childNodes`：子节点可以有很多个，所以是复数形式。childNodes包含一个NodeList对象，该NodeList属性可以用方括号和item()方法访问，但是访问的时候是针对childNodes进行代码的编写。
+  - 兄弟节点`previousNode`和`nextSibling`
+    - `previousNode`：当前节点的前一个节点。如果当前节点是第一个节点，那么它的previousNode为null
+    - `nextSibling`：当前节点的下一个节点。如果当前节点是第一个节点，那么它的nextSibling为null
+  - 第一个子节点`firstChild`和最后一个子节点`lastChild`：
+    - someNode.firstChild === someNode.childNodes[0];
+    - someNode.lastChild === someNode.childNodes[someNode.childNodes.length-1];
+
+  - hasChildNodes()方法：节点包含一个或者多个子节点时返回true；
+  - ownerDocument属性：所有节点都拥有的最后一个属性。该属性表示指向整个文档的文档节点。任何节点都只属于它所在的文档
+
+- 操作节点
+
+  - 以下四种操作方法是在父节点parentNode的基础上进行的操作：**不是所有节点都有子节点，所以并不是所有节点都有这四个方法：**
+    - `appendChild(newNode)`方法：在childNodes的末尾添加一个子节点。添加这个子节点后，childNodes、parent、lastChild都会动态地发生变化。这个方法返回新添加的节点。
+
+    ```javascript
+    var newNode = someNode.appendChild("p")//表示在节点someNode下的子节点列表的末尾，添加了节点P
+    ```
+
+    如果将childNodes中已有的节点用appendChild()方法添加，那么就会改变原有节点的位置，原有节点变成lastChild
+
+    - `insertBefore(newNode，oldNode)`方法：在某个节点`oldNode`之前插入新节点`newNode`。这个新节点是旧节点的previousSibling。如果旧节点oldNode=null，那么就相当于这个节点插入之后，它的后面没有节点——>也就是说，此时insertBefore(newNode, null)方法等同于appendChild(newNode)方法。
+    - `replaceChild(newNode, oldNode)`：节点替换。新节点替换了旧节点的位置，被替换的节点从节点树上删除了，但是还是属于这个文档，只是在这个文档中没有它的位置了。
+    - `removeChild(node)`：该方法接受一个参数，即要被移除的节点。节点被移除之后依然跪文档所有，只不过在文档中没有了自己的位置。
+
+  - 所有子节点都拥有的两个方法：
+    - `cloneNode(boolean值)`：谁调用它，它就复制谁，得到一个调用这个方法的节点的副本。
+
+      这个方法接受一个布尔值参数，这个参数为true的时候执行**<u>深复制</u>**，复制节点及其子节点树；
+
+      值为false时执行**<u>浅复制</u>**，只复制当前节点本身。
+
+      返回的副本没有指定父节点，是一个“孤儿”。可以通过节点操作将它添加到指定的父节点下。
+
+    - `normalize()`方法：处理文本节点。如果是空文本节点就删除它；如果是两个相邻的文本节点就合并成一个文本节点。
+
+### 10.1.2  document类型
+
+- document节点特征：
+
+  - nodeType = 9
+  - nodeName = "#document";
+  - nodeValue = null
+  - parentNode值为null
+  - ownerDocument值为null
+  - 其子节点可能为一个documentType（最多一个）、Element（最多一个）、comment（注释）、processingInstruction
+  - document可以用于表示HTML页面或者其它基于XML的文档，不过最常用的还是用来表示HTML页面。它是HTMLDocument类型的一个对象实例，可以取得页面信息、操作页面外观和低层结构。
+
+- 文档子节点
+
+  - documentElemen属性t：指向html元素
+
+    ```javascript
+    var html = document.documentElement //取得对元素<html>的引用
+    ```
+
+    在<html><head></head></head><body></body></html>结构中，
+
+    document.documentElement 与 document.firstChild 、document.childNodes[0]指向同一个元素，即<html>。
+
+  - body属性：指向<body>标签。
+
+  - doctype属性：通过document.doctype来访问文档类型声明documengType。不同浏览器里的doctype具有不同表现。
+
+    - IE8以及更早版本：将doctype解析为注释；
+    - safari、chrome、opera：将doctype正常解析，但是不会当作document.chindNodes的子节点
+    - IE9+和FireFox：将doctype正常解析，当作document.chindNodes的第一个子节点
+
+  - 当html元素之外有注释的时候:
+
+    ```html
+    <!--第一行注释-->
+    <html>
+      <head>
+        
+      </head>
+      <body>
+        
+      </body>
+    </html>
+    <!--第二行注释-->
+    ```
+
+    不同浏览器里有不同的表现：
+
+    - IE8以及更早的版本、Safari3.1以及更高级的版本、Chrome、Opera浏览器：为第一行注释创建节点，第一行注释成为document.childNodes的第一个子节点；忽略第二行注释；
+    - IE9+版本：将第一行注释创建为子节点，也为最后一行注释创建为子节点。
+    - Safari3.1以及更早的版本、FireFox：忽略这两条注释。
+
+- 文档信息
+
+  与文档信息有关的属性`title`、`URL`、`domain`、`referrer`。
+
+  - title：标题信息，即显示在浏览器窗口的标题栏或者标签页上的标题。可通过该属性获取和修改【即可读写】
+
+  - URL：页面完整的URL【即显示在地址栏中的URL信息】
+
+  - domain：只包含页面的域名。与URL属性关联。可以设置，设置的域名需要是包含在URL中。
+
+  ```javascript
+  //假设原始域名为"www.wrox.com"
+  document.domain = "wrox.com" //成功
+  document.domain = "nczoneline.net" //出错
+  ```
+
+  **处于跨域安全限制，来自不同子域的页面不能通过JavaScript通信。这时候可以将每个子域的domain属性改为相同的值，这些页面就可以访问对方包含的JavaScript对象了。**
+
+  浏览器对domain属性还有一个限制：可以由松散loose状态改为紧绷tight状态，反之则不可以。
+
+  ```javascript
+  //假设原来的document.domain = "p2p.wrox.com"
+  document.domain = "wrox.com" //1⃣️成功
+  document.domain = "p2p.wrox.com" //2⃣️出错。也就是可以减少，不能增加。
   ```
 
   
+
+  - Referrer: 保存着所有链接到当前页面的那个页面的URL。没有来源的情况下可能该值会为空字符串。
+
+  这些信息都保存在http请求的头部，只是我们通过这些属性，可以在JavaScript中访问到它们。
+
+- 查找元素
+
+  - getElementById()，传入一个字符串，表示元素的id值。如果页面中有多个元素使用同一个id值，那么获取到第一个id对应的元素。
+    - IE7以及更早版本的一些怪异行为：
+      - 忽略大小写。myDiv和mydiv都可以返回同一个元素。
+      - 如果页面中有表单元素【input、textarea、button、select等】的name属性值与我们要查找的id值相同，那么就可能获取到这个表单元素。
+  - getElementsByTagName()，传入一个字符串参数，表示标签名。
+    - 返回一个数组，数组包含获取到的元素节点列表。在HTML中，返回的是一个HTMLCollection对象，这是一个动态集合，与childNodes包含的NodeList列表类似。
+    - 可以用方括号、item()方法、namedItem()方法访问列表项。item()传入表示第几项的数字；namedItem()传入表示name属性值的字符串参数。
+    - 如果使用的是[]语法，那么传入的是数字则后台调用item()方法；传入的是字符串则后台调用namedItem()方法。
+    - 星号“*”表示“全部”
+    - HTML中，传递给该方法的标签名不区分大小写，以实现最大限度的兼容
+
+  ```javascript
+  var allElements = document.getElementsByTagName("*");
+  ```
+
+  - getElementsByName()
+
+    只有HTMLDocument才会有的方法，获取给定name值的元素。一般用在表单的单选按钮上。
+
+  ```html
+  <html>
+    <head>
+    </head>
+    <body>
+      <li><input type="radio" name="color" value="red" id="colorRed"/>Red</li>
+      <li><input type="radio" name="color" value="green" id="colorGreen"/>Green</li>
+      <li><input type="radio" name="color" value="blue" id="colorBlue"/>Blue</li>
+      <script>
+        var radios = document.getElementsByName("color");//获取到整个含有name值为color的列表。
+      </script>
+    </body>
+  </html>
+  ```
+
+- 特殊集合
+
+  这些特殊集合都是HTMLDocument对象。
+
+  - document.anchors: 含有name属性的`<a>`元素的集合
+  - document.links: 含有href属性的`<a>`元素的集合
+  - document.forms: 包含文档中所有的`<form>`元素，与document.getElementsByTagName('form')结果相同。
+  - document.images: 包含文档中所有的 图片元素`<img>`，与document.getElementsByTagName('img')结果相同。
+
+- DOM一致性检验
+
+  document.implementation.hasFeature()方法，接收两个参数：1⃣️要检测的DOM功能的名称、2⃣️版本
+
+  ```javascript
+  var hasXMLDOM = document.implementation.hasFeature("XML", "1.0")
+  ```
+
+  文档写入
