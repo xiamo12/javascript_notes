@@ -601,3 +601,34 @@ DOM可以将HTML或者XMl描述成一个由多层节点构成的结构。
 文档节点是每个文档的根结点。html元素通常作为HTML文档中文档元素的唯一子节点，称为文档元素。
 
 HTML文档元素始终是<html>，XML文档中任何元素都可以成为文档元素。
+
+html元素通过元素节点来表示
+
+特性（attribute）通过特性节点来表示
+
+文档类型通过文档类型节点来表示
+
+注释通过注释节点来表示。
+
+### 10.1.1  Node类型
+
+- nodeType: 节点类型：
+  - 元素节点nodeType = 1
+  - 属性节点nodeType = 2
+  - 文本节点nodeType = 3
+  - 注释节点nodeType = 8
+  - 文档节点nodeType = 9
+- nodeName：节点名称
+  - 元素的nodeName是元素标签名。
+
+- nodeValue：节点值
+  - 元素的nodeValue = null
+  - 属性的nodeValue = 属性值
+
+- childNodes：每个节点都有一个childNodes属性，其中保存着一个NodeList对象。，NodeList是一个类数组对象，可以用方括号访问它的属性，但是它并不是array的实例。
+
+  ```
+  someNode.childNodes[0]
+  ```
+
+  
