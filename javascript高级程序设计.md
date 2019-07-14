@@ -830,4 +830,47 @@ html元素通过元素节点来表示
   var hasXMLDOM = document.implementation.hasFeature("XML", "1.0")
   ```
 
-  文档写入
+- 文档写入
+
+  write() 、 writeIn()、open()、close()方法。前两者接收字符串参数，将()里的内容写入文档流；
+
+  - write() 、 writeIn(): 
+    - write() 原样写入，writeIn()会在字符串末尾添加一个换行符。
+    - 可以使用write() 、 writeIn()动态包含外部的JavaScript资源，注意用字符串引入`<script>`文件的时候，`</script>`要用转义字符转义`/` - - - ->  `<\/script>`
+    - 文档加载结束之后再调用这两个方法，会重写整个页面。
+  - open()、close()方法：
+    - 打开和关闭网页的输出流。【暂时没找到使用方法】
+  - 严格型XHTML不支持这四个方法。
+
+  ### 10.1.3  Element类型
+
+  nodeType值为1
+
+  nodeValue值为null
+
+  nodeName值为标签名。标签名也可以用tagName获取到。 在HTML中返回的标签名全部是大写格式。在XML中原样返回。如果不确定脚本回运行在HTML还是XML中，最好都用toLoertCase()先转换成小写在比较。
+
+  ```html
+  <html>
+    <body>
+      <div id="myDiv">
+        this is a div
+      </div>
+      <script>
+        var mydiv = document.getElementById("myDiv");
+        console.log(mydiv.tagName) //DIV
+        console.log(mydiv.tagName) //DIV
+      </script>
+    </body>
+  </html>
+  ```
+
+  parentNode可以是Element或者Document
+
+  childNodes可能是element、text、comment、processigInstruction等
+
+- HTML元素
+
+  所有的HTML元素都由HTMLElement类型或者其子类型表示。HTMLElement类型直接继承自Element并且添加了一些属性和方法。
+
+  
