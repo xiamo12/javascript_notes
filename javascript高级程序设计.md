@@ -251,6 +251,7 @@ location.assign("https://www.zhihu.com");
 ### 8.3.1  检测插件
 
 - **非IE浏览器可以用plugins数组来检测插件类型。plugins数组中的每个插件都含有以下四个属性：**
+
   - name：插件的名字
 
   将name与给定的插件名字进行比较，检测plugins中是否有该插件。
@@ -669,6 +670,7 @@ html元素通过元素节点来表示
 - 操作节点
 
   - 以下四种操作方法是在父节点parentNode的基础上进行的操作：**不是所有节点都有子节点，所以并不是所有节点都有这四个方法：**
+
     - `appendChild(newNode)`方法：在childNodes的末尾添加一个子节点。添加这个子节点后，childNodes、parent、lastChild都会动态地发生变化。这个方法返回新添加的节点。
 
     ```javascript
@@ -682,6 +684,7 @@ html元素通过元素节点来表示
     - `removeChild(node)`：该方法接受一个参数，即要被移除的节点。节点被移除之后依然跪文档所有，只不过在文档中没有了自己的位置。
 
   - 所有子节点都拥有的两个方法：
+
     - `cloneNode(boolean值)`：谁调用它，它就复制谁，得到一个调用这个方法的节点的副本。
 
       这个方法接受一个布尔值参数，这个参数为true的时候执行**<u>深复制</u>**，复制节点及其子节点树；
@@ -842,35 +845,311 @@ html元素通过元素节点来表示
     - 打开和关闭网页的输出流。【暂时没找到使用方法】
   - 严格型XHTML不支持这四个方法。
 
-  ### 10.1.3  Element类型
+### 10.1.3  Element类型
 
-  nodeType值为1
+nodeType值为1
 
-  nodeValue值为null
+nodeValue值为null
 
-  nodeName值为标签名。标签名也可以用tagName获取到。 在HTML中返回的标签名全部是大写格式。在XML中原样返回。如果不确定脚本回运行在HTML还是XML中，最好都用toLoertCase()先转换成小写在比较。
+nodeName值为标签名。标签名也可以用tagName获取到。 在HTML中返回的标签名全部是大写格式。在XML中原样返回。如果不确定脚本回运行在HTML还是XML中，最好都用toLoertCase()先转换成小写在比较。
 
-  ```html
-  <html>
-    <body>
-      <div id="myDiv">
-        this is a div
-      </div>
-      <script>
-        var mydiv = document.getElementById("myDiv");
-        console.log(mydiv.tagName) //DIV
-        console.log(mydiv.tagName) //DIV
-      </script>
-    </body>
-  </html>
-  ```
+```html
+<html>
+  <body>
+    <div id="myDiv">
+      this is a div
+    </div>
+    <script>
+      var mydiv = document.getElementById("myDiv");
+      console.log(mydiv.tagName) //DIV
+      console.log(mydiv.tagName) //DIV
+    </script>
+  </body>
+</html>
+```
 
-  parentNode可以是Element或者Document
+parentNode可以是Element或者Document
 
-  childNodes可能是element、text、comment、processigInstruction等
+childNodes可能是element、text、comment、processigInstruction等
 
 - HTML元素
 
-  所有的HTML元素都由HTMLElement类型或者其子类型表示。HTMLElement类型直接继承自Element并且添加了一些属性和方法。
+  所有的HTML元素都由HTMLElement类型或者其子类型表示。HTMLElement类型直接继承自Element并且添加了一些属性和方法。添加的属性和方法分别对应于每个HTML元素中都存在的下列标准特性：
 
+  - id：元素在文档中的唯一标识符
+  - title：有关元素的附加信息说明
+  - dir：语言的方向。ltr表示左到右，rtl表示右到左。
+  - className：元素的CSS类名。
+
+- 取得特性
+
+  - getAttribute(attr): 传入的特性attr与实际的特性名相同。如果特性不存在就返回null；用getAttribute(attr)获取特性名时，特性的名称不区分大小写，ID和id表示同一个特性。
+
+    ```javascript
+    var mydiv = document.getElementById("root");
+    mydiv.getAttribute("class") // 与mydiv.getAttribute("CLASS")结果等同
+    ```
+
+  - 可以用于任何特性，包括公认的特性和自定义特性。而“.”号只能获取公有特性。
+
+  - 用在获取“style”特性和事件处理函数时给出的结果与“.”号不同。
+
+    - getAttribute(attr)用在style特性时，返回的是css文本；而“.”号进行属性访问返回的是一个对象；
+    - getAttribute(attr)用在事件处理函数的时候，返回的是响应的代码串；而属性访问返回的是JavaScript函数。
+    - 因为这两点区别的存在，尽量使用属性访问，只有获取自定义属性的时候使用getAttribute(attr)。
+
+- 设置特性
+
+  - setAttribute("name", "value"): name存在就替换掉value的值；不存在就创建name、value；
+
+    ```javascript
+    var mydiv = document.getElementById("mydiv");
+    mydiv.setAttribute("class", "color")//获取id为mydiv的元素，设置它的class属性为color
+    ```
+
+  - 可以操作所有的特性，包括自定义特性。这个操作会把所有的大写特性名转换为小写，即“ID”会转换为“id”
+
+  - IE7以及更早版本中，用setAttribute("name", "value")设置style和class无效，因此最好使用属性来设置特性。
+
+  - 移除特性
+    - removeAttribute()：彻底删除元素特性
+
+- attributes属性
+
+  - 只有element节点类型有attributes属性。
+  - attributes属性包含一个NameNodeMap，与NodeList类似，也是一个动态集合，元素的每一个特性都由attr节点表示，每个节点都保存在NameNodeMap集合里。这个集合有以下特性：
+    - getNamedItem(name)：获取节点名称nodeName = name的节点；
+    - removeNamedItem(name)：移除节点名称nodeName = name的节点；返回被删除特性的Attr节点
+    - setNamedItem(node)：向列表中添加节点，以nodeName作为节点索引
+    - Item(pos)：返回位置pos处的节点。
+
+  访问属性节点方法：
+
+  ```javascript
+  var mydiv = document.getElementById("mydiv");
+  mydiv.attributes.getNamedItem("id").nodeValue //获取属性名为id的属性节点的值。
+  mydiv.attributes["id"].nodeValue //等同于上述语法
+  ```
+
+- 创建元素
+
+  - createElement()：参数是字符串。可以是一个标签，也可以是完整的标签内容
+
+  - ```javascript
+    var newele = document.createElement("p"); //创建一个p标签。
+    var newele = document.createElement("<p id='para' class='cont'>this is an example</p>")//IE浏览器支持的用法。
+    ```
+
+- 元素的子节点
+
+  - 元素的childNodes包含了它所有的子节点，包括元素、文本、注释、处理指令。
+  - IE浏览器会忽略空白符；其他浏览器元素之间的空白符算一个节点。
+
+### 10.1.4 Text类型
+
+nodeType为3；
+
+nodeName为"#text"；
+
+nodeValue为文本值；
+
+parent为一个element；
+
+没有子节点。
+
+- 可以通过nodeValue属性或者data属性访问文本内容，这两个属性中包含的值相同；
+
+- length属性：保存节点中字符的数目。nodeValue.length的值域data.length值相同。
+
+- 创建文本节点：document.createTextNode()，接受一个字符串作为文本参数。会对里面的内容进行HTML/XML格式编码。
+
+- ```javascript
+  var newtext = document.createTextNode("<em>this is a test</em>")
+  ```
+
+- 规范化文本节点：
+
+  在包含一个或者多个文本节点的**父节点上**调用normalize()方法，可以删除空文本节点，或者将两个相邻的文本节点合并成一个。
+
+- 分割文本节点：
+
+  splitText()从指定的位置分割文本节点。分割之后原来的节点包含从开始位置到指定分割位置之前的节点，新节点包含分割位置及其之后的节点。
+
+  ```javascript
+  var textNode = document.createTextNode("Hello world!");
+  element.appendChild(textNode);
+  var newNode = element.firstChild.splitText(5)//从下标位置为5的地方开始分割该文本节点
+  alert(element.firstChild.nodeValue)//原节点的值此时被分割成了"Hello"
+  alert(newNode.nodeValue)//分割后的新节点值为" world"，包括分割处的空格。
+  ```
+
+  分割文本节点是从文本处提取数据的一种常用的DOM解析技术。
+
+### 10.1.15 Comment类型
+
+DOM中的注释用Comment来表示。
+
+nodeType为8；
+
+nodeValue为注释内容
+
+nodeName为"#comment"
+
+parentNode为document或者element
+
+和text节点一样，也没有子节点
+
+- comment与text继承自相同的基类，拥有除了splitText之外的所有字符串操作方法。
+- 可以用document.createComment()来创建文本节点，但是很少用到这个方法；
+- 要访问注释节点，一定要保证它是`<html>`元素的后代，在`<html></html>`里
+
+### 10.1.6 CDATASelection类型
+
+CDATASelection只针对XML中的文件。
+
+### 10.1.7 documentType类型
+
+仅有safari、Opera、Firefox支持它，包含值与doctype有关的所有信息。
+
+nodeType值为10；
+
+nodeName值为doctype的名称
+
+nodeValue值为null
+
+parentNode为document
+
+没有子节点。
+
+支持documentType的浏览器会把documentType的值保存在document.doctype中，有三个属性：name、entities、notations。只有name属性是有用的。name属性保存文档类型的名称，也就是文档类型声明中，在<!DOCTYPE 之后的文本。
+
+### 10.1.8 DocumentFragment类型
+
+文档片段，是一种“轻量级”的文档，可以包含和控制节点，相当于一个占位符，但是在DOM中没有对应的标记。
+
+nodeType为11；
+
+nodeName值为“#document-fragment”；
+
+nodeValue值为null
+
+parentNode为null
+
+- 不能把文档片段直接添加到文档中，但可以在其中保存一段将来可能会添加到文档中的代码，将它作为临时仓库来使用。
+
+- 创建文档片段用document.createDocumentFragment()
+
+  ```javascript
+  var fragment = document.createDocumentFragment();//创建一个仓库
+  var myList = document.getElementById("mylist");//获取id为mylist的ul元素
   
+  for(i = 0; i< 3; i++){
+    var li = document.createElement("li");
+    var textNode = document.createtextNode("item:"+(i+1));
+    li.appendChild(textNode);
+    fragment.appendChild(li);
+  }//创建三个li标签，含有内容"item:"和顺序位置，再添加到仓库里
+  
+  myList.appendChild(fragment);将fragment包含的节点添加到ul元素。
+  ```
+
+### 10.1.9 Attr类型
+
+Attr类型是存在于attributes属性中的节点。
+
+nodeType为2；
+
+nodeName为特性名称
+
+nodeValue为特性的值
+
+parentNode为null
+
+特性不被认为是DOM树中的一部分。
+
+## 10.2  DOM操作技术
+
+### 10.2.1  动态脚本
+
+- 方法一:插入外部文件
+
+```javascript
+function loadScript(url){
+  var script = document.createElement("script");
+
+  script.type = "text/javascript";
+  script.src = url;
+  document.body.appendChild(script);
+}
+loadScript(client.js);
+```
+
+方法二：直接插入javascript代码
+
+```javascript
+//非IE浏览器
+function loadScript(){
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.appendChild(document.createTextNode("function sayHi(){alert("hello!")}"));//为script标签添加内容。
+  document.body.appendChild(script);
+}
+loadScript(client.js);
+
+//IE浏览器，IE浏览器不允许访问script和style标签内容。因此使用script.text属性来设置脚本内容
+function loadScript(){
+  var script = document.createElement("script");
+  script.type = "text/javascript";
+  script.text = "function sayHi(){alert("hello!")}";//为script标签添加内容。
+  document.body.appendChild(script);
+}
+loadScript(client.js);
+```
+
+### 10.2.2  动态样式
+
+创建动态样式的方法一：插入link标签
+
+```javascript
+var link = document.createElement("link");
+link.rel = "stylesheet";
+link.type = "text/css";
+link.href = "style.css";
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(link);
+```
+
+创建动态方法二：插入style标签
+
+```javascript
+//非IE浏览器
+var style = document.createElement("style");
+style.type = "text/css";
+style.appendChild(document.createTextNode("body{color:red}"));
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(style);
+
+//IE浏览器中，不允许直接访问style标签的子节点。可以通过stylesheet属性的cssText属性来访问style的内容
+var style = document.createElement("style");
+style.type = "text/css";
+style.stylesheet.cssText = "body{color:red}";
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(style);
+
+//插入style标签的通用方法
+function loadStyle(){
+  var style = document.createElement("style");
+  style.type = "text/css";
+  try{
+    style.appendChild(document.createTextNode("body{color:red}"))
+  }catch(er){
+    style.stylesheet.cssText = "body{color:red}";
+  }
+  var head = document.getElementsByTagName("head")[0];
+  head.appendChild(style);
+}
+```
+
+
+
+### 10.2.3  操作表格
